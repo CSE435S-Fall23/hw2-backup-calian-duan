@@ -14,6 +14,7 @@ public class Relation {
 	private TupleDesc td;
 	
 	public Relation(ArrayList<Tuple> l, TupleDesc td) {
+		//does pushing work. 
 		//your code here
 	}
 	
@@ -77,11 +78,14 @@ public class Relation {
 	
 	public TupleDesc getDesc() {
 		//your code here
+		//does pushing work. 
+		//does pushing work.
 		return null;
 	}
 	
 	public ArrayList<Tuple> getTuples() {
 		//your code here
+		//does pushing work. 
 		return null;
 	}
 	
@@ -91,6 +95,7 @@ public class Relation {
 	 */
 	public String toString() {
 		//your code here
+		//does pushing work. 
 		return null;
 	}
 }
