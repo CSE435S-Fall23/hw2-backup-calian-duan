@@ -18,7 +18,10 @@ import hw1.HeapFile;
 import hw1.IntField;
 import hw1.Relation;
 import hw1.RelationalOperator;
+import hw1.StringField;
+import hw1.Tuple;
 import hw1.TupleDesc;
+import hw1.Type;
 
 public class RelationTest {
 
@@ -57,8 +60,7 @@ public class RelationTest {
 	@Test
 	public void testSelect() {
 		Relation ar = new Relation(ahf.getAllTuples(), atd);
-		ar = ar.select(0, RelationalOperator.EQ, new IntField(530));
-		
+		ar = ar.select(0, RelationalOperator.EQ, new IntField(530));	
 		assertTrue(ar.getTuples().size() == 5);
 		assertTrue(ar.getDesc().equals(atd));
 	}
@@ -76,6 +78,22 @@ public class RelationTest {
 	
 	@Test
 	public void testJoin() {
+//		ArrayList<Tuple> addTuples = new ArrayList<>();
+//		Type[] type = new Type[2];
+//		String[] name = new String[2];
+//		type[0] = Type.STRING;
+//		type[1] = Type.INT;
+//		name[0] = "category";
+//		name[1] = "7";
+//		TupleDesc resultTd = new TupleDesc(type, name);
+//		Tuple resultTuple = new Tuple(resultTd);
+//		resultTuple.setField(0, new StringField("Lebron"));
+//		resultTuple.setField(1, new IntField(7));
+//		addTuples.add(resultTuple);
+//		Tuple newTuple = new Tuple(resultTd);
+//		newTuple.setField(0, new StringField("coby"));
+//		newTuple.setField(1, new IntField(8));
+//		addTuples.add(newTuple);
 		Relation tr = new Relation(testhf.getAllTuples(), testtd);
 		Relation ar = new Relation(ahf.getAllTuples(), atd);
 		tr = tr.join(ar, 0, 0);
@@ -99,29 +117,28 @@ public class RelationTest {
 		assertTrue(ar.getTuples().size() == 8);
 		assertTrue(ar.getDesc().getFieldName(0).equals("b1"));
 		assertTrue(ar.getDesc().getFieldName(1).equals("a2"));
+		
 		assertTrue(ar.getDesc().getSize() == 8);
 		
 	}
 	
 	@Test
-	public void testAggregate() {
+	public void testAggregate() throws Exception {
 		Relation ar = new Relation(ahf.getAllTuples(), atd);
 		ArrayList<Integer> c = new ArrayList<Integer>();
 		c.add(1);
 		ar = ar.project(c);
 		ar = ar.aggregate(AggregateOperator.SUM, false);
-		
 		assertTrue(ar.getTuples().size() == 1);
-		IntField agg = (IntField)(ar.getTuples().get(0).getField(0));
+		IntField agg = (IntField) ar.getTuples().get(0).getField(0);
 		assertTrue(agg.getValue() == 36);
 	}
 	
 	@Test
-	public void testGroupBy() {
+	public void testGroupBy() throws Exception {
 		Relation ar = new Relation(ahf.getAllTuples(), atd);
 		ar = ar.aggregate(AggregateOperator.SUM, true);
-		
+		//ar = ar.aggregate(AggregateOperator.AVG, true);
 		assertTrue(ar.getTuples().size() == 4);
 	}
-
 }

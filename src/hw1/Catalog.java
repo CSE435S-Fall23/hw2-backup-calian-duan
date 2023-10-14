@@ -15,13 +15,49 @@ import java.util.*;
  */
 
 public class Catalog {
+	private Map<Integer, TableMetadata> tableMap;
 	
+	//what instance variables?
+	//inner class - id name and primary key 
+	//name description field id?
+	private class TableMetadata {
+        private TupleDesc tupleDesc;
+        private String name;
+        private String pkeyField;
+        private HeapFile heapFile;
+        private int id;
+        
+        private TableMetadata(String name, String pkeyField, HeapFile heapFile) {
+        	this.name= name;
+        	this.pkeyField=pkeyField;
+        	this.heapFile = heapFile;
+        	this.tupleDesc = this.heapFile.getTupleDesc();
+        	this.id = heapFile.getId();
+        }
+        private String getPkeyField(){
+        	return this.pkeyField;
+        }
+        private TupleDesc getTupleDesc(){
+        	return this.tupleDesc;
+        }
+        private HeapFile getHeapFile() {
+        	return this.heapFile;
+        }
+        private String getName() {
+        	return this.name;
+        }
+        private int getId() {
+        	return this.id;
+        }
+    }
+
     /**
      * Constructor.
      * Creates a new, empty catalog.
      */
     public Catalog() {
     	//your code here
+    	this.tableMap = new HashMap<>();
     }
 
     /**
@@ -34,8 +70,20 @@ public class Catalog {
      */
     public void addTable(HeapFile file, String name, String pkeyField) {
     	//your code here
+    	//is the table a tuple? - No - multiple tuples?
+    	//just overwrite if duplicate
+    	TableMetadata new_table_metadata = new TableMetadata(name,pkeyField, file);
+    	//tableMap.put(name.hashCode(), new_table_metadata);
+    	//maybe the key should just be the meta data and I can include the id in the metadata - but hash the entire rest of the object not just the name
+    	if(tableMap.containsKey(file.getId())) {
+    		tableMap.put(file.hashCode(), new_table_metadata);
+    	}
+    	else {
+    		tableMap.remove(file.hashCode(), new_table_metadata);
+    		tableMap.put(file.hashCode(), new_table_metadata);
+    	}
     }
-
+    
     public void addTable(HeapFile file, String name) {
         addTable(file,name,"");
     }
@@ -46,7 +94,17 @@ public class Catalog {
      */
     public int getTableId(String name) {
     	//your code here
-    	return 0;
+    	//tableID here needs to match id from HeapFile table id (third param)
+    	for (Map.Entry<Integer, TableMetadata> entry : tableMap.entrySet()) {
+    		System.out.println(entry.getValue().name);
+    		System.out.println(name);
+    		System.out.println("AQUI in get Table ID");
+    		if(entry.getValue().name.equals(name)) {
+    			System.out.println(entry.getValue().heapFile.getId());
+    			return entry.getValue().heapFile.getId();
+    		}
+    	}
+    	throw new NoSuchElementException("None of the values match the expected value.");
     }
 
     /**
@@ -56,7 +114,12 @@ public class Catalog {
      */
     public TupleDesc getTupleDesc(int tableid) throws NoSuchElementException {
     	//your code here
-    	return null;
+    	if (!tableMap.containsKey(tableid)) {
+    		throw new NoSuchElementException("id not in tableMap");
+    	}
+    	else {
+    		return tableMap.get(tableid).getTupleDesc();
+    	}
     }
 
     /**
@@ -67,27 +130,31 @@ public class Catalog {
      */
     public HeapFile getDbFile(int tableid) throws NoSuchElementException {
     	//your code here
-    	return null;
+    	//confusion here as I guess I never stored the heapfile. Where should I store
+    	// it, should I change the metadata to the key and have the heapfile as the value? 
+    	return tableMap.get(tableid).getHeapFile();
     }
 
     /** Delete all tables from the catalog */
     public void clear() {
     	//your code here
+    	tableMap.clear();
     }
 
     public String getPrimaryKey(int tableid) {
     	//your code here
-    	return null;
+    	return tableMap.get(tableid).getPkeyField();
     }
 
     public Iterator<Integer> tableIdIterator() {
     	//your code here
-    	return null;
+    	Iterator<Integer> iterator = tableMap.keySet().iterator();
+    	return iterator;
     }
 
     public String getTableName(int id) {
     	//your code here
-    	return null;
+    	return tableMap.get(id).getName();
     }
     
     /**
@@ -144,4 +211,3 @@ public class Catalog {
         }
     }
 }
-

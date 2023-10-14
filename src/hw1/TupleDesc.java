@@ -18,15 +18,18 @@ public class TupleDesc {
      * @param fieldAr array specifying the names of the fields. Note that names may be null.
      */
     public TupleDesc(Type[] typeAr, String[] fieldAr) {
-    	//your code here
+    	this.types = typeAr;
+    	this.fields = fieldAr;
+    	
     }
 
-    /**
+  
+	/**
      * @return the number of fields in this TupleDesc
      */
     public int numFields() {
         //your code here
-    	return 0;
+    	return (this.fields).length;
     }
 
     /**
@@ -37,8 +40,13 @@ public class TupleDesc {
      * @throws NoSuchElementException if i is not a valid field reference.
      */
     public String getFieldName(int i) throws NoSuchElementException {
-        //your code here
-    	return null;
+    	try {
+    		String field = this.fields[i];
+    		return field;
+    	}
+    	catch(ArrayIndexOutOfBoundsException e) {
+    		throw new NoSuchElementException("i is not a valid field reference");
+		}
     }
 
     /**
@@ -49,9 +57,18 @@ public class TupleDesc {
      * @throws NoSuchElementException if no field with a matching name is found.
      */
     public int nameToId(String name) throws NoSuchElementException {
-        //your code here
-    	return 0;
-    }
+    	name = name.trim();
+    	for(int i = 0; i < fields.length; i++)
+    		try {
+    			if (this.fields[i].equals(name)) {
+        			return i;
+        		}
+    		}
+        	catch(ArrayIndexOutOfBoundsException e) {
+        		throw new NoSuchElementException("no field with matching name is found");
+    		}
+    	throw new NoSuchElementException("no field with matching name is found");
+    	}
 
     /**
      * Gets the type of the ith field of this TupleDesc.
@@ -61,8 +78,13 @@ public class TupleDesc {
      * @throws NoSuchElementException if i is not a valid field reference.
      */
     public Type getType(int i) throws NoSuchElementException {
-        //your code here
-    	return null;
+    	try {
+    		Type type = this.types[i];
+    		return type;
+    		}
+    	catch(ArrayIndexOutOfBoundsException e){
+    		throw new NoSuchElementException("i is not a valid field reference");
+    	}
     }
 
     /**
@@ -70,8 +92,20 @@ public class TupleDesc {
      * Note that tuples from a given TupleDesc are of a fixed size.
      */
     public int getSize() {
-    	//your code here
-    	return 0;
+    	int total = 0;
+    	for(int i=0; i<this.numFields(); i++) {
+    		/**
+    		 * Look at type doc and might be something like TYPE.int
+    		 */
+    		if(this.getType(i) == Type.INT){
+    			total = total + 4;
+    		}
+    		else {
+    			//check to see if this should be 129 (one byte holds length info)
+    			total = total + 129;
+    		}
+    	}
+    	return total;
     }
 
     /**
@@ -84,6 +118,17 @@ public class TupleDesc {
      */
     public boolean equals(Object o) {
     	//your code here
+    	//check 247 reference studio 7
+    	
+    	TupleDesc comparison = (TupleDesc) o;
+    	if (comparison.getSize() == this.getSize()){
+    		for(int i=0; i<this.numFields(); i++) {
+    			if(!this.getType(i).equals(comparison.getType(i))) {
+    				return false;
+    			}
+    		}
+    		return true;
+    	}
     	return false;
     }
     
@@ -91,7 +136,7 @@ public class TupleDesc {
     public int hashCode() {
         // If you want to use TupleDesc as keys for HashMap, implement this so
         // that equal objects have equals hashCode() results
-        throw new UnsupportedOperationException("unimplemented");
+        throw new UnsupportedOperationException("Hashcode is ignored");
     }
 
     /**
@@ -102,6 +147,39 @@ public class TupleDesc {
      */
     public String toString() {
         //your code here
-    	return "";
+    	String[] fields = this.fields;
+    	Type[] types = this.types;
+    	String return_val = "";
+    	String type_string = "";
+    	//System.out.println(this.getType(2));
+    	for(int i=0; i<this.numFields(); i++) {
+    		//System.out.println(this.numFields());
+    		if(types[i]== Type.INT){
+    			type_string= "INT";
+    			//System.out.println("INT");
+    		}
+    		else {
+    			type_string = "STRING";
+    			//System.out.println("STRING");
+    		}
+    		//System.out.println("HERE SECOND");
+    		String temp = type_string + "(" + (String)fields[i];
+    		if(i == this.numFields()-1) {
+    			temp += ")";
+    		}
+    		else {
+    			temp += "), ";
+    		}
+    		return_val+=temp;		
+    	}
+    	return return_val;
     }
+    public static void main (String args[]) {
+    	Type[] type = {Type.INT, Type.STRING, Type.INT};
+    	String[] field  = {"height", "name", "weight"};
+    	TupleDesc tupledesc = new TupleDesc(type, field);
+    	System.out.println(tupledesc.toString());
+    }    
 }
+
+    
