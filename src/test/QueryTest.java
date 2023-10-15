@@ -84,7 +84,7 @@ public class QueryTest {
 		IntField agg = (IntField) (r.getTuples().get(0).getField(0));
 		assertTrue(agg.getValue() == 36);
 	}
-	
+
 	@Test
 	public void testGroupBy() {
 		Query q = new Query("SELECT a1, SUM(a2) FROM A GROUP BY a1");
@@ -100,6 +100,31 @@ public class QueryTest {
 		
 		assertTrue(r.getTuples().size() == 8);
 		assertTrue(r.getDesc().getSize() == 8);
+	}
+	
+	@Test
+	public void testAlias() {
+		Query q = new Query("SELECT a1 as result FROM A");
+		Relation r = q.execute();
+		
+		assertTrue(r.getTuples().size() == 8);
+		//assertTrue(r.getDesc().getSize() != 8);
+	}
+	@Test
+	public void testComplicateAlias() {
+		Query q = new Query("SELECT a1, SUM(a2) as sum FROM A GROUP BY a1");
+		Relation r = q.execute();
+		
+		assertTrue(r.getTuples().size() == 4);
+	}
+	
+	@Test 
+	public void testMax() {
+		Query q = new Query("SELECT max(a1) FROM A");
+		Relation r = q.execute();
+		assertTrue(r.getTuples().size() == 1);
+		IntField agg = (IntField) (r.getTuples().get(0).getField(0));
+		assertTrue(agg.getValue() == 530);
 	}
 	
 }

@@ -141,4 +141,6 @@ public class RelationTest {
 		//ar = ar.aggregate(AggregateOperator.AVG, true);
 		assertTrue(ar.getTuples().size() == 4);
 	}
+	
+	
 }
