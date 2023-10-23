@@ -1,0 +1,5 @@
+Do not modify tests for unhandled exceptions. Catch and deal with it somewhere in your program.(-2)
+Does not support and aggregation operation on String. Should support MAX/MIN/COUNT. (-2.5)
+Your GroupBy assumes and cast the column to be grouped on as Sting type, but aggregate should not change the data type of the field when grouping by a int field.(-.5)
+
+Grade: 95/100
